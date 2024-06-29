@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dark Riddle</title>
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #000;
+        font-family: Arial, sans-serif;
+    }
+    .phone {
+        width: 375px;
+        height: 667px;
+        background: #000000;
+        border-radius: 18px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .header {
+        background: #1E2B34;
+        color: white;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        border-top-left-radius: 18px;
+        border-top-right-radius: 18px;
+    }
+    .header img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+    .header .contact-info {
+        display: flex;
+        flex-direction: column;
+    }
+    .header .contact-info .name {
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .header .contact-info .status {
+        font-size: 12px;
+        color: #c9c9c9;
+    }
+    .screen {
+        flex: 1;
+        background: #dcdcdc;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+    .message {
+        margin-bottom: 20px;
+    }
+    .message.jj {
+        text-align: left;
+    }
+    .message.you {
+        text-align: right;
+    }
+    .message p {
+        display: inline-block;
+        padding: 10px 15px;
+        border-radius: 10px;
+        max-width: 80%;
+        word-wrap: break-word;
+        position: relative;
+    }
+    .message .time {
+        display: block;
+        font-size: 10px;
+        color: #999;
+        margin-top: 5px;
+    }
+    .message.jj p {
+        background-color: #1E2B34;
+        color: #fff;
+    }
+    .message.you p {
+        background-color: #134D37;
+        color: white;
+    }
+    .controls {
+        background: #c9c9c9;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+    }
+    .controls textarea {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        margin-right: 10px;
+        background-color: #ffffff;
+        resize: none; /* Remove the resize handle */
+        overflow: hidden; /* Hide scrollbar */
+        height: auto; /* Initial height */
+        min-height: 40px; /* Minimum height */
+        max-height: 200px; /* Maximum height */
+    }
+    .controls button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+    button.disabled {
+        background-color: #666666;
+        color: white;
+        cursor: not-allowed;
+    }
+    button.enabled {
+        background-color: #0E7A0D;
+        color: white;
+    }
+</style>
+</head>
+<body>
+
+<div class="phone">
+    <div class="header">
+        <img src="https://i.imgur.com/vUNLrRA.png" alt="Profile Picture">
+        <div class="contact-info">
+            <span class="name">J.J.</span>
+            <span id="status" class="status">Online</span>
+        </div>
+    </div>
+    <div class="screen" id="chatContainer">
+        <div class="message jj"><p>Wassup, John. It's been a while since we last talked, hasn't it? I need you to finish the article on the old abandoned hospital. We're putting it on the front page of Sunday's edition<span class="time">22:15</span></p></div>
+    </div>
+    <div class="controls">
+        <textarea id="inputMessage" placeholder="[press space]" disabled></textarea>
+        <button id="sendButton" class="disabled" disabled>Send</button>
+    </div>
+</div>
+
+<script>
+    const messages = [
+        { author: 'you', text: "Ah, I'm not sure if I'm the right person for this. It's not exactly the kind of story that interests me", time: '22:16' },
+        { author: 'jj', text: "I know you're going through a tough time. Things haven't been easy for you lately. But I need you to do this. Not just for the article, but for yourself", time: '22:17' },
+        { author: 'you', text: "You know I'm still struggling with... things. I'm not exactly in the best state to do an investigative report", time: '22:18' },
+        { author: 'jj', text: "I know. But you're also one of the best journalists we've ever had. This story needs to be told, and I believe you can do it. Maybe immersing yourself in work can help you climb out of this hole", time: '22:19' },
+        { author: 'you', text: "Do you think an abandoned hospital, full of drugs and despair, is the best place for me right now? This could end up destroying me completely", time: '22:20' },
+        { author: 'jj', text: "I believe you can transform this experience. Seeing up close what these people are going through might give you a different perspective, maybe even help you understand your own situation better. And who knows, it could be an opportunity for redemption", time: '22:21' },
+        { author: 'you', text: "I don't know, Jonah... I'm tired of feeling this way", time: '22:22' },
+        { author: 'jj', text: "I understand. But you have to try. Do this for yourself. Show that you can still make a difference. I want you to give yourself a chance", time: '22:23' },
+        { author: 'you', text: "Alright, I'll do it. But I'm warning you, it's not going to be easy", time: '22:24' },
+        { author: 'jj', text: "I trust you, John. I know you'll do a great job. Good luck", time: '22:25' },
+		{ author: 'you', text: "See you", time: '22:25' },
+    ];
+
+    let messageIndex = 0;
+    let charIndex = 0;
+    let currentText = '';
+    const chatContainer = document.getElementById('chatContainer');
+    const inputMessage = document.getElementById('inputMessage');
+    const sendButton = document.getElementById('sendButton');
+    const statusElement = document.getElementById('status');
+
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && inputMessage.disabled) {
+            e.preventDefault();
+            if (messageIndex < messages.length) {
+                const { author, text } = messages[messageIndex];
+                if (author === 'you') {
+                    if (charIndex < text.length) {
+                        currentText += text[charIndex];
+                        charIndex++;
+                        inputMessage.value = currentText + " ";
+                        adjustTextareaHeight(inputMessage);
+                    } else {
+                        inputMessage.value = currentText;
+                        inputMessage.disabled = false;
+                        sendButton.disabled = false;
+                        sendButton.classList.remove('disabled');
+                        sendButton.classList.add('enabled');
+                        adjustTextareaHeight(inputMessage);
+                    }
+                }
+            }
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Enter' && !inputMessage.disabled) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    sendButton.addEventListener('click', () => {
+        sendMessage();
+    });
+
+// Função para enviar mensagem
+function sendMessage() {
+    if (!sendButton.classList.contains('disabled') && inputMessage.value.trim()) {
+        const { time } = messages[messageIndex];
+        addMessage('you', inputMessage.value.replace(" ", ""), time);
+        resetInput();
+
+       
+        if (messageIndex === messages.length - 1 || messages[messageIndex].author !== 'you') {
+            
+            fadeOutChat();
+            setTimeout(skipToWarning, 1500); 
+            return;
+        }
+        setTimeout(() => {
+            if (messageIndex < messages.length - 1) {
+                messageIndex++;
+                const { author, text, time } = messages[messageIndex];
+                if (author === 'jj') {
+                    statusElement.textContent = 'Typing...';
+                    setTimeout(() => {
+                        addMessage(author, text, time);
+                        statusElement.textContent = 'Online';
+                        messageIndex++;
+                    }, 3000);
+                }
+            }
+        }, 2000);
+    }
+}
+
+
+function fadeOutChat() {
+    const chatScreen = document.querySelector('.screen');
+    chatScreen.style.transition = 'opacity 1s ease-in-out';
+    chatScreen.style.opacity = '0';
+}
+
+
+    function addMessage(author, text, time) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${author}`;
+        const messageContent = document.createElement('p');
+        messageContent.textContent = text;
+        const messageTime = document.createElement('span');
+        messageTime.className = 'time';
+        messageTime.textContent = time;
+        messageContent.appendChild(messageTime);
+        messageDiv.appendChild(messageContent);
+        chatContainer.appendChild(messageDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function resetInput() {
+        currentText = '';
+        charIndex = 0;
+        inputMessage.value = '';
+        inputMessage.disabled = true;
+        sendButton.disabled = true;
+        sendButton.classList.remove('enabled');
+        sendButton.classList.add('disabled');
+        adjustTextareaHeight(inputMessage);
+    }
+
+    function adjustTextareaHeight(element) {
+        element.style.height = 'auto';
+        element.style.height = element.scrollHeight + 'px';
+    }
+
+    function skipToWarning() {
+        window.location.href = 'warning.html';
+    }
+
+    sendButton.classList.add('disabled');
+</script>
+</body>
+</html>

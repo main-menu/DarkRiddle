@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dark Riddle</title>
+<style>
+  body {
+    background-color: black;
+    color: white;
+    font-family: monospace;
+    font-size: 24px;
+    overflow: hidden;
+  }
+  .fade-out {
+    animation: fadeOut 5s forwards;
+  }
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+</style>
+</head>
+<body>
+  <div id="texto"></div>
+
+  <script>
+    const linhas = [
+      "As night falls, you enter the hospital through the back.",
+      "The padlock on the protective gate of the yard was broken.",
+      "As you enter the place, you find human waste, a lot of dirt, and syringes on the floor.",
+      "You intend to take photos of the place and investigate where the strange sounds are coming from.",
+      "",
+      "You head to one of the rooms in the psychiatric ward and notice there are some papers under a pillow.",
+      "They seem to be letters written by a mentally ill patient from when the hospital was operating.",
+      "While you shine your flashlight on the letters, you sense a presence that quickly closes the door behind you.",
+      "",
+      "YOU WILL NEVER LEAVE THIS PLACE.",
+      "",
+      "The voice fades away, and you are trapped and alone.",
+      "You try to scream, but there is no one around anymore.",
+      "Your only company is the madman's letters, which tell you stories and hold some kind of secret code.",
+      "A type of 'Dark Riddle'."
+    ];
+
+    const velocidadeMinima = 10; // tempo mínimo de digitação em milissegundos
+    const velocidadeMaxima = 50; // tempo máximo de digitação em milissegundos
+    const pausaEntreLinhas = 1000; // tempo de pausa entre cada linha em milissegundos
+    const tempoAteRedirecionar = 5000; // tempo de espera antes de redirecionar em milissegundos
+
+    let linhaAtual = 0; // índice da linha atual
+    let index = 0; // índice do caractere atual
+
+    function digitarLinhas() {
+      if (linhaAtual < linhas.length) {
+        const linha = linhas[linhaAtual];
+        
+        // Adiciona um espaço para a próxima linha, exceto para a primeira linha
+        if (linhaAtual > 0) {
+          document.getElementById('texto').innerHTML += "<br>";
+        }
+
+        // Digita a linha atual
+        digitarCaracteres(linha);
+      } else {
+        // Após a última mensagem, aplica a classe de fade-out e redireciona
+        setTimeout(function() {
+          document.body.classList.add('fade-out');
+          setTimeout(comecar, 5000); // Redireciona após 5 segundos de fade-out
+        }, pausaEntreLinhas);
+      }
+    }
+
+    function digitarCaracteres(linha) {
+      if (index < linha.length) {
+        const tempo = Math.floor(Math.random() * (velocidadeMaxima - velocidadeMinima + 1)) + velocidadeMinima;
+        setTimeout(function() {
+          document.getElementById('texto').innerHTML += linha.charAt(index);
+          index++;
+          digitarCaracteres(linha);
+        }, tempo);
+      } else {
+        // Passa para a próxima linha após um tempo de pausa
+        setTimeout(function() {
+          linhaAtual++;
+          index = 0;
+          digitarLinhas();
+        }, pausaEntreLinhas);
+      }
+    }
+
+    function comecar() {
+      window.location.href = 'https://howitstarted.github.io/DarkRiddle';
+    }
+
+    // Inicia a função para digitar as linhas assim que a página carregar
+    window.onload = digitarLinhas;
+  </script>
+</body>
+</html>
