@@ -207,7 +207,7 @@
 function sendMessage() {
     if (!sendButton.classList.contains('disabled') && inputMessage.value.trim()) {
         const { time } = messages[messageIndex];
-        addMessage('you', inputMessage.value.replace(" ", ""), time);
+        addMessage('you', inputMessage.value, time);
         resetInput();
 
        
